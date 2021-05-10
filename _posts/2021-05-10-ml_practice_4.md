@@ -2,6 +2,7 @@
 layout: post
 title: "머신러닝 과제4"
 excerpt: "로지스틱 회귀 직접 구현해보기"
+categori: ml_practice
 ---
 
 ## 1. 로지스틱 회귀 구현
