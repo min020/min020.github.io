@@ -603,9 +603,7 @@ __output__
     500 0.741685141452624
     46 0.7384023240072761
     506 0.740791760665329 조기 종료!
-    
-
-
+<br/>    
 
 
 ```python
@@ -635,9 +633,7 @@ __output__
     500 1.1598873879153397
     7 0.9209910467744262
     502 1.1590067416079748 조기 종료!
-    
-
-
+<br/>
 
 
 ```python
@@ -717,9 +713,7 @@ __output__
                        multi_class='auto', n_jobs=None, penalty='l2',
                        random_state=42, solver='lbfgs', tol=0.0001, verbose=0,
                        warm_start=False)
-
-
-
+<br/>
 
 
 
@@ -769,9 +763,7 @@ __output__
                        multi_class='auto', n_jobs=None, penalty='l2',
                        random_state=42, solver='lbfgs', tol=0.0001, verbose=0,
                        warm_start=False)
-
-
-
+<br/>
 
 
 
