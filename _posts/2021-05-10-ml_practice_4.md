@@ -157,6 +157,8 @@ def custom_logistic(x_t, x_v, y_t, y_v, e, iter, alpha):
 best_theta = custom_logistic(X_train, X_valid, y_train, y_valid, 0.008, 5001, 0.1)
 ```
 
+-output-
+
     0 0.6937924415670413
     500 0.6781515868268262
     277 0.6761331341641763
@@ -190,8 +192,7 @@ def score(x, y, theta):
 score(X_test, y_test, best_theta)
 ```
 
-
-
+-output-
 
     0.9666666666666667
 
@@ -245,8 +246,7 @@ y_test = y[rnd_indices[-test_size:]]
 y_train[:5]
 ```
 
-
-
+-output-
 
     array([0, 0, 2, 0, 0])
 
@@ -271,8 +271,7 @@ def to_one_hot(y):
 to_one_hot(y_train[:5])
 ```
 
-
-
+-output-
 
     array([[1., 0., 0.],
            [1., 0., 0.],
@@ -373,6 +372,8 @@ for i in range(Y_train_one_hot.shape[1]):   #클래스 수 만큼 반복
               break
 ```
 
+-output-
+
     0 4.0225913870387
     500 0.5296157580910943
     97 0.5214856310184777
@@ -425,8 +426,7 @@ def score_multie(theta, x, y):
 score_multie(best_theta.T, X_test, Y_test_one_hot)
 ```
 
-
-
+-output-
 
     0.8333333333333334
 
@@ -597,6 +597,8 @@ def custom_logistic(x_t, x_v, y_t, y_v, e, iter, alpha):
 best_theta_time = custom_logistic(img_train, img_valid, time_train, time_valid, 0.005, 5001, 0.1)
 ```
 
+-output-
+
     0 3.516324506958805
     500 0.741685141452624
     46 0.7384023240072761
@@ -608,8 +610,7 @@ best_theta_time = custom_logistic(img_train, img_valid, time_train, time_valid, 
 score(img_test, time_test, best_theta_time)
 ```
 
-
-
+-output-
 
     0.8
 
@@ -626,6 +627,8 @@ score(img_test, time_test, best_theta_time)
 best_theta_place = custom_logistic(img_train, img_valid, place_train, place_valid, 0.005, 5001, 0.1)
 ```
 
+-output-
+
     0 1.77084082891388
     500 1.1598873879153397
     7 0.9209910467744262
@@ -637,8 +640,7 @@ best_theta_place = custom_logistic(img_train, img_valid, place_train, place_vali
 score(img_test, place_test, best_theta_place)
 ```
 
-
-
+-output-
 
     0.7
 
@@ -678,8 +680,7 @@ accuracy_score = np.mean(result == y)
 accuracy_score
 ```
 
-
-
+-output-
 
     0.75
 
@@ -697,6 +698,8 @@ from sklearn.linear_model import LogisticRegression
 log_reg = LogisticRegression(solver="lbfgs", random_state=42)
 log_reg.fit(img_train, time_train)
 ```
+
+-output-
 
     /usr/local/lib/python3.7/dist-packages/sklearn/utils/validation.py:760: DataConversionWarning: A column-vector y was passed when a 1d array was expected. Please change the shape of y to (n_samples, ), for example using ravel().
       y = column_or_1d(y, warn=True)
@@ -723,8 +726,7 @@ prediction = log_reg.predict(img_test)
 np.mean(prediction.reshape(len(prediction), 1) == time_test)
 ```
 
-
-
+-output-
 
     0.9
 
@@ -738,6 +740,8 @@ from sklearn.linear_model import LogisticRegression
 log_reg_place = LogisticRegression(solver="lbfgs", random_state=42)
 log_reg_place.fit(img_train, place_train)
 ```
+
+-output-
 
     /usr/local/lib/python3.7/dist-packages/sklearn/utils/validation.py:760: DataConversionWarning: A column-vector y was passed when a 1d array was expected. Please change the shape of y to (n_samples, ), for example using ravel().
       y = column_or_1d(y, warn=True)
@@ -772,8 +776,7 @@ prediction = log_reg_place.predict(img_test)
 np.mean(prediction.reshape(len(prediction), 1) == place_test)
 ```
 
-
-
+-output-
 
     0.75
 
