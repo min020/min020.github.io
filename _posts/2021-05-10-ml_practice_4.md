@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: post
 title: "머신러닝 과제4"
 ---
 
