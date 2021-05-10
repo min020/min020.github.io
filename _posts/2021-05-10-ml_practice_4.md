@@ -42,19 +42,15 @@ mpl.rc('ytick', labelsize=12)
 ```python
 from sklearn import datasets
 iris = datasets.load_iris()
-```
 
-
-```python
 X = iris["data"][:, (2, 3)]  # 꽃잎 길이, 꽃잎 넓이
 y = (iris["target"] == 2).astype(np.int)  # 버지니카(Virginica) 품종일 때 1(양성)
-```
 
-
-```python
 X_with_bias = np.c_[np.ones([len(X), 1]), X]   #특성에 편향 추가
 ```
 
+
+가져온 데이터셋을 훈련, 검증, 테스트 세트로 나눈다.
 
 ```python
 test_ratio = 0.2                                         # 테스트 세트 비율 = 20%
