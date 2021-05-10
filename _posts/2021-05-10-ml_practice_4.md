@@ -34,7 +34,6 @@ mpl.rc('xtick', labelsize=12)
 mpl.rc('ytick', labelsize=12)
 ```
 <br/>
-
 ### 데이터 불러오기
 
 사이킷런이 기본으로 제공하는 붓꽃 데이터를 가져온다.
