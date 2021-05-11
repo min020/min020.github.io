@@ -458,7 +458,7 @@ score_multie(best_theta.T, X_test, Y_test_one_hot)
 
 __output__
 
-    0.8333333333333334
+    0.8666666666666667
 
 
 <br/>
