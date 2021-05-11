@@ -112,31 +112,18 @@ def custom_logistic(x_t, x_v, y_t, y_v, e, iter, alpha):
   for iteration in range(iter):     
       logits = x_t.dot(Theta)   #훈련세트로 모델 훈련
       Y_proba = sigmoid(logits)
-      Y_pro_train = np.array([]) 
+      Y_proba = Y_proba.reshape(len(Y_proba), 1)
 
-      for i in Y_proba:     #sigmoid 함수로 예측한 값을 0과 1로 변환
-        if i < 0.5:
-          Y_pro_train = np.append(Y_pro_train, np.array([0]))
-        else:
-          Y_pro_train = np.append(Y_pro_train, np.array([1]))
-      Y_pro_train = Y_pro_train.reshape(len(Y_pro_train), 1)
-
-      error = Y_pro_train - y_t     #그레디언트 계산
+      error = Y_proba - y_t     #그레디언트 계산
       gradients = 1/len(x_t) * x_t.T.dot(error) + np.r_[np.zeros([1, 1]), alpha * Theta[1:]]  #편향에는 규제를 적용하지 않음
       Theta = Theta - e * gradients   #세타값 수정
 
       #검증세트로 비용함수 계산
       logits = x_v.dot(Theta)
-      Y_proba = sigmoid(logits)
-      Y_pro_valid = np.array([]) 
-      for i in Y_proba:
-        if i < 0.5:
-          Y_pro_valid = np.append(Y_pro_valid, np.array([0]))
-        else:
-          Y_pro_valid = np.append(Y_pro_valid, np.array([1]))
-      Y_pro_valid = Y_pro_valid.reshape(len(Y_pro_valid), 1)
+      Y_proba1 = sigmoid(logits)
+      Y_proba1 = Y_proba1.reshape(len(Y_proba1), 1)
 
-      logistic_loss = -1/len(x_v) * (np.sum(y_v * np.log(Y_proba + epsilon) + (1 - y_v) * np.log(1 - Y_proba + epsilon)))  #로지스틱 회귀의 비용함수
+      logistic_loss = -1/len(x_v) * (np.sum(y_v * np.log(Y_proba1 + epsilon) + (1 - y_v) * np.log(1 - Y_proba1 + epsilon)))  #로지스틱 회귀의 비용함수
       l2_loss = 1/2 * np.sum(np.square(Theta[1:]))   #릿지 규제
       loss = logistic_loss + alpha * l2_loss  #규제를 적용한 손실비용
 
@@ -154,20 +141,29 @@ def custom_logistic(x_t, x_v, y_t, y_v, e, iter, alpha):
             print(iteration, loss, "조기 종료!")
             best_theta = Theta
             break
+      if iteration == 5000:
+          best_theta = update_theta
   return best_theta
 ```
 <br/>
 
 ```python
-best_theta = custom_logistic(X_train, X_valid, y_train, y_valid, 0.008, 5001, 0.1)
+best_theta = custom_logistic(X_train, X_valid, y_train, y_valid, 0.1, 5001, 0.1)
 ```
 
 __output__
 
-    0 0.6937924415670413
-    500 0.6781515868268262
-    277 0.6761331341641763
-    586 0.6784351840733734 조기 종료!
+    0 0.6984142121443112
+    500 0.4045324104243425
+    1000 0.37920391705757733
+    1500 0.3720839518764778
+    2000 0.36945183448390084
+    2500 0.3683427597755818
+    3000 0.3678338314981391
+    3500 0.36758401130785656
+    4000 0.36745395113584906
+    4500 0.3673825839369891
+    5000 0.36734158093750957
     
 <br/>
 정확도를 출력하는 함수이다.
@@ -203,6 +199,28 @@ __output__
 
 
 <br/>
+
+사이킷런에서 제공하는 로지스틱 회귀 모델과 비교를 해본다.
+
+
+```python
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+log_reg = LogisticRegression(solver="lbfgs", random_state=42)
+log_reg.fit(X_train, y_train)
+y_pred = log_reg.predict(X_test)
+accuracy_score(y_test, y_pred)
+```
+
+__output__
+
+    0.9666666666666667
+
+<br/>
+
+성능이 똑같이 구현됐다.
+
 
 
 ## 2. 일대다 방식을 적용한 로지스틱 회귀 다중 클래스 분류
@@ -309,7 +327,7 @@ n_inputs = X_train.shape[1]    #세타 생성시 필요한 변수
 
 
 ```python
-eta = 0.008
+eta = 0.01
 n_iterations = 5001
 m = len(X_train)
 epsilon = 1e-7
@@ -333,30 +351,16 @@ for i in range(Y_train_one_hot.shape[1]):   #클래스 수 만큼 반복
     for iteration in range(n_iterations):     
         logits = X_train.dot(Theta)
         Y_proba = sigmoid(logits)
-        Y_pro_train = np.array([]) 
+        Y_proba = Y_proba.reshape(len(Y_proba), 1)
 
-        for t in Y_proba:
-          if t < 0.5:
-            Y_pro_train = np.append(Y_pro_train, np.array([0]))
-          else:
-            Y_pro_train = np.append(Y_pro_train, np.array([1]))
-        Y_pro_train = Y_pro_train.reshape(len(Y_pro_train), 1)
-
-        error = Y_pro_train - train_labels     
+        error = Y_proba - train_labels     
         gradients = 1/m * X_train.T.dot(error) + np.r_[np.zeros([1, 1]), alpha * Theta[1:]]
         Theta = Theta - eta * gradients
 
         logits = X_valid.dot(Theta)
-        Y_proba = sigmoid(logits)
-        Y_pro_valid = np.array([]) 
-        for t in Y_proba:
-          if t < 0.5:
-            Y_pro_valid = np.append(Y_pro_valid, np.array([0]))
-          else:
-            Y_pro_valid = np.append(Y_pro_valid, np.array([1]))
-        Y_pro_valid = Y_pro_valid.reshape(len(Y_pro_valid), 1)
+        Y_proba1 = sigmoid(logits)
 
-        logistic_loss = -1/len(X_valid) * (np.sum(valid_labels * np.log(Y_proba + epsilon) + (1 - valid_labels) * np.log(1 - Y_proba + epsilon)))
+        logistic_loss = -1/len(X_valid) * (np.sum(valid_labels * np.log(Y_proba1 + epsilon) + (1 - valid_labels) * np.log(1 - Y_proba1 + epsilon)))
         l2_loss = 1/2 * np.sum(np.square(Theta[1:]))
         loss = logistic_loss + alpha * l2_loss
 
@@ -380,26 +384,40 @@ for i in range(Y_train_one_hot.shape[1]):   #클래스 수 만큼 반복
               best_loss = np.infty
               count = 0
               break
+        if iteration == 5000:
+            if len(best_theta) == 0:
+                best_theta = np.append(best_theta, np.array(update_theta))
+            else:
+                best_theta = np.c_[best_theta, update_theta]
+            best_loss = np.infty
+            count = 0
+            print()
 ```
 
 __output__
 
-    0 4.0225913870387
-    500 0.5296157580910943
-    97 0.5214856310184777
-    595 0.5324772187115792 조기 종료!
-    
-    0 2.3441280791734154
-    500 0.7087807437143531
-    1000 0.6918664544815131
-    1081 0.6879379492433929
-    1094 0.689597892068635 조기 종료!
-    
-    0 1.1625869805728124
-    500 0.763400022007789
-    1000 0.6795820408458436
-    1313 0.6782773409511903
-    1496 0.6786808310648912 조기 종료!
+    0 2.8324585554264754
+    500 0.18148748306964524
+    1000 0.1801540617504957
+    758 0.1797808030082284
+    1258 0.18069319479686938 조기 종료!
+
+    0 1.7961252954385172
+    500 0.6889945510053727
+    216 0.6775919931218558
+    708 0.6956429857752415 조기 종료!
+
+    0 1.1484956079541364
+    500 0.3971356381694875
+    1000 0.353745580215652
+    1500 0.3401989208866527
+    2000 0.3342908511580718
+    2500 0.3312909804535724
+    3000 0.3296279296047427
+    3500 0.32865344160087623
+    4000 0.3280614509765657
+    4500 0.32769320083179504
+    5000 0.3274605344054749
     
     
 <br/>
@@ -442,7 +460,20 @@ __output__
 
 
 <br/>
+사이킷런이 제공하는 로지스틱 회귀모델의 `solver`인자에 `'newton-cg'`를 넣어서 다중 클래스 분류로 사용할 수 있다.
 
+
+```python
+multi_log_reg = LogisticRegression(solver='newton-cg', random_state=42).fit(X_train,y_train)
+multi_log_reg.score(X_test,y_test)
+```
+
+__ouput__
+
+    0.9333333333333333
+
+
+<br/>
 
 ## 3. 사진 분류하기
 
@@ -519,7 +550,7 @@ label_place = np.concatenate((np.tile(np.array([1]), (25)), np.tile(np.array([0]
 ```python
 test_ratio = 0.2                                         # 테스트 세트 비율 = 20%
 validation_ratio = 0.2                                   # 검증 세트 비율 = 20%
-total_size = len(img_set)                            # 전체 데이터셋 크기
+total_size = len(img_set)                                # 전체 데이터셋 크기
 
 test_size = int(total_size * test_ratio)                 # 테스트 세트 크기: 전체의 20%
 validation_size = int(total_size * validation_ratio)     # 검증 세트 크기: 전체의 20%
@@ -564,30 +595,17 @@ def custom_logistic(x_t, x_v, y_t, y_v, e, iter, alpha):
   for iteration in range(iter):     
       logits = x_t.dot(Theta)
       Y_proba = sigmoid(logits)
-      Y_pro_train = np.array([]) 
+      Y_proba = Y_proba.reshape(len(Y_proba), 1)
 
-      for i in Y_proba:
-        if i < 0.5:
-          Y_pro_train = np.append(Y_pro_train, np.array([0]))
-        else:
-          Y_pro_train = np.append(Y_pro_train, np.array([1]))
-      Y_pro_train = Y_pro_train.reshape(len(Y_pro_train), 1)
-
-      error = Y_pro_train - y_t    
+      error = Y_proba - y_t    
       gradients = 1/len(x_t) * x_t.T.dot(error) + alpha * Theta
       Theta = Theta - e * gradients  
 
       logits = x_v.dot(Theta)
-      Y_proba = sigmoid(logits)
-      Y_pro_valid = np.array([]) 
-      for i in Y_proba:
-        if i < 0.5:
-          Y_pro_valid = np.append(Y_pro_valid, np.array([0]))
-        else:
-          Y_pro_valid = np.append(Y_pro_valid, np.array([1]))
-      Y_pro_valid = Y_pro_valid.reshape(len(Y_pro_valid), 1)
+      Y_proba1 = sigmoid(logits)
+      Y_proba1 = Y_proba1.reshape(len(Y_proba1), 1)
 
-      logistic_loss = -1/len(x_v) * (np.sum(y_v * np.log(Y_proba + epsilon) + (1 - y_v) * np.log(1 - Y_proba + epsilon)))
+      logistic_loss = -1/len(x_v) * (np.sum(y_v * np.log(Y_proba1 + epsilon) + (1 - y_v) * np.log(1 - Y_proba1 + epsilon)))
       l2_loss = 1/2 * np.sum(np.square(Theta))  
       loss = logistic_loss + alpha * l2_loss
 
@@ -605,20 +623,23 @@ def custom_logistic(x_t, x_v, y_t, y_v, e, iter, alpha):
             print(iteration, loss, "조기 종료!")
             best_theta = update_theta
             break
+      if iteration == 5000:
+          best_theta = update_theta
   return best_theta
 ```
 <br/>
 
 ```python
-best_theta_time = custom_logistic(img_train, img_valid, time_train, time_valid, 0.005, 5001, 0.1)
+best_theta_time = custom_logistic(img_train, img_valid, time_train, time_valid, 0.03, 5001, 0.1)
 ```
 
 __output__
 
-    0 3.516324506958805
-    500 0.741685141452624
-    46 0.7384023240072761
-    506 0.740791760665329 조기 종료!
+    0 24.481118474723623
+    500 2.4531758466815563
+    1000 1.3550301799451117
+    814 0.8876929715788981
+    1153 0.9059949647462503 조기 종료!
 <br/>    
 
 
@@ -642,15 +663,16 @@ __output__
 
 
 ```python
-best_theta_place = custom_logistic(img_train, img_valid, place_train, place_valid, 0.005, 5001, 0.1)
+best_theta_place = custom_logistic(img_train, img_valid, place_train, place_valid, 0.05, 5001, 0.1)
 ```
 
 __output__
 
-    0 1.77084082891388
-    500 1.1598873879153397
-    7 0.9209910467744262
-    502 1.1590067416079748 조기 종료!
+    0 22.366810621509387
+    500 8.574634992730468
+    479 1.7202279115031904
+    878 2.0095348389206897 조기 종료!
+
 <br/>
 
 
@@ -660,11 +682,16 @@ score(img_test, place_test, best_theta_place)
 
 __output__
 
-    0.7
-
+    0.8
 
 <br/>
-낮과 밤, 실내와 실외를 모두 분류한 다중 레이블 분류의 정확도이다.
+
+낮과 밤, 실내와 실외를 분류하는 정확도가 학습률을 조정하면 계속해서 바뀐다.   
+낮과 밤은 0.03, 실내와 실외는 0.05가 가장 높은 정확도가 나오는 학습률이다.   
+
+
+낮과 밤, 실내와 실외를 모두 분류한 다중 레이블 분류의 정확도이다.   
+각각의 세타값으로 예측한 값을 합친 후 y(레이블)와 비교한다.
 
 
 ```python
@@ -700,17 +727,19 @@ accuracy_score
 
 __output__
 
-    0.75
+    0.8
 
 
 <br/>
+
+각각의 분류가 0.8씩 나오고 다중 분류 정확도가 0.8로 나오는 것으로 봐서 그리 나쁘지 않은 성능인것 같다.   
 
 
 ### C. 사이킷런에서 제공하는 LogisticRegression 모델과 성능 비교
 
 직접 구현한 로지스틱 회귀와 사이킷런에서 제공하는 로지스틱 회귀와 성능 비교를 해본다.
 
-낮과 밤을 분류한 정확도이다.
+사이킷런 로지스틱 회귀 모델의 낮과 밤을 분류한 정확도이다.
 
 
 ```python
@@ -720,13 +749,6 @@ log_reg.fit(img_train, time_train)
 ```
 
 __output__
-
-    /usr/local/lib/python3.7/dist-packages/sklearn/utils/validation.py:760: DataConversionWarning: A column-vector y was passed when a 1d array was expected. Please change the shape of y to (n_samples, ), for example using ravel().
-      y = column_or_1d(y, warn=True)
-    
-
-
-
 
     LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
                        intercept_scaling=1, l1_ratio=None, max_iter=100,
@@ -739,10 +761,6 @@ __output__
 
 ```python
 prediction = log_reg.predict(img_test)
-```
-
-
-```python
 np.mean(prediction.reshape(len(prediction), 1) == time_test)
 ```
 
@@ -752,7 +770,8 @@ __output__
 
 
 <br/>
-실내와 실외를 분류한 정확도이다.
+낮과 밤은 직접 구현한 모델보다 성능이 높게 나왔다.   
+다음은 실내와 실외를 분류한 정확도이다.
 
 
 ```python
@@ -762,21 +781,6 @@ log_reg_place.fit(img_train, place_train)
 ```
 
 __output__
-
-    /usr/local/lib/python3.7/dist-packages/sklearn/utils/validation.py:760: DataConversionWarning: A column-vector y was passed when a 1d array was expected. Please change the shape of y to (n_samples, ), for example using ravel().
-      y = column_or_1d(y, warn=True)
-    /usr/local/lib/python3.7/dist-packages/sklearn/linear_model/_logistic.py:940: ConvergenceWarning: lbfgs failed to converge (status=1):
-    STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
-    
-    Increase the number of iterations (max_iter) or scale the data as shown in:
-        https://scikit-learn.org/stable/modules/preprocessing.html
-    Please also refer to the documentation for alternative solver options:
-        https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
-      extra_warning_msg=_LOGISTIC_SOLVER_CONVERGENCE_MSG)
-    
-
-
-
 
     LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
                        intercept_scaling=1, l1_ratio=None, max_iter=100,
@@ -789,10 +793,6 @@ __output__
 
 ```python
 prediction = log_reg_place.predict(img_test)
-```
-
-
-```python
 np.mean(prediction.reshape(len(prediction), 1) == place_test)
 ```
 
@@ -802,4 +802,7 @@ __output__
 
 
 <br/>
-사이킷런이 제공하는 로지스틱 회귀 모델이 더 좋은 성능을 보이긴 하지만 얼추 비슷하긴 하다. 직접 구현한 로지스틱 회귀 모델에서 조기종료 부분을 좀 더 손보면 성능이 더 높아질 것으로 예상된다.
+실내와 실외는 직접 구현한 모델의 성능이 더 높게 나왔다.   
+사이킷런이 제공하는 로지스틱 회귀 모델이 다중 레이블 분류에서 좀 더 좋은 성능을 내고 이진 분류는 비슷한 성능을 보인다.   
+처음 작성한 코드에서 피드백을 받고 비용함수 부분을 수정했더니 전체적인 성능이 올라갔다.   
+다중레이블 분류의 정확도를 높이는건 좀 더 수정을 해봐야 할 것 같다.
