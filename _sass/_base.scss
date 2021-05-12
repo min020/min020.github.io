@@ -132,7 +132,7 @@ code {
     font-size: 17px;
     border: 1px solid $grey-color;
     border-radius: 3px;
-    background-color: #f5f5f5;
+    background-color: #000;
 }
 
 code {
@@ -324,9 +324,9 @@ pre {
     word-wrap: break-word;
 }
 pre code {
-    background-color: #000;
-    color:#fff;
-    font-size: 14px;
+    background-color: #fff;
+    color:#000;
+    font-size: 12px;
     padding: 0;
 }
 sup {
