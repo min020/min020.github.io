@@ -792,6 +792,8 @@ __output__
                        multi_class='auto', n_jobs=None, penalty='l2',
                        random_state=42, solver='lbfgs', tol=0.0001, verbose=0,
                        warm_start=False)
+
+
 <br/>
 
 
