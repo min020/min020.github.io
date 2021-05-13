@@ -5,6 +5,8 @@ excerpt: "선형 모델 학습"
 category: ml_practice
 date: 2021-03-10
 last_modified_at: 2020-05-13
+use_math: true
+comments: true
 ---
 
 ## 기본설정
