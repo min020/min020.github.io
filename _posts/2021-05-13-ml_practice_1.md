@@ -209,7 +209,7 @@ __output__
 
 삶의 만족도는 다음과 같이 표현할 수 있다.   
 
-__삶의만족도 = theta_0 + theta_1 * 1인당GDP__   
+$$text{삶의 만족도} = \theta_0 + \theta_1 * text{1인당GDP}$$   
 저 절편과 기울기를 사이킷런 패키지의 `linear_model` 모듈에 포함된 `LinearRegression` 클래스를 활용하여 학습시킬 예정이다.   
 다음 코드는 1인당 GDP를 통해 삶의 만족도를 예측하는 훈련을 진행한다.
 
