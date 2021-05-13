@@ -14,7 +14,8 @@ github_username:  min020
 # Build settings
 markdown: kramdown
 
-# Math equation
+# Math setting
+markdown: kramdown
 highlighter: rouge
 lsi: false
 excerpt_separator: "\n\n"
