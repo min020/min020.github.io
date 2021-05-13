@@ -3,6 +3,8 @@ layout: post
 title: "머신러닝 과제4"
 excerpt: "로지스틱 회귀 직접 구현해보기"
 category: ml_practice
+date: 2021-05-10
+last_modified_at: 2020-05-12
 ---
 
 ## 1. 로지스틱 회귀 구현
