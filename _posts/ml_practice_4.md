@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "머신러닝4"
+title: "로지스틱 회귀"
 excerpt: "로지스틱 회귀 직접 구현해보기"
 category: ml_practice
 date: 2021-05-10
