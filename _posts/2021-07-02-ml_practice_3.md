@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "랜덤포레스트&스태킹"
-excerpt: "랜덤포레스트와 스태킹 직접 구현해보기"
+title: "랜덤 포레스트&스태킹"
+excerpt: "랜덤 포레스트와 스태킹 직접 구현해보기"
 category: ml_practice
 date: 2021-07-02
 last_modified_at: 2021-07-02
