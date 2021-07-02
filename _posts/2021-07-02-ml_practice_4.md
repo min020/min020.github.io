@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "엑스트라트리"
-excerpt: "선형 모델 학습"
+title: "엑스트라 트리"
+excerpt: "엑스트라 트리 직접 구현해보기"
 category: ml_practice
 date: 2021-07-02
 last_modified_at: 2021-07-02
