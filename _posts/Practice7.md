@@ -1,0 +1,630 @@
+```python
+# 파이썬 ≥3.5 필수
+import sys
+assert sys.version_info >= (3, 5)
+
+# 사이킷런 ≥0.20 필수
+import sklearn
+assert sklearn.__version__ >= "0.22"
+
+# 공통 모듈 임포트
+import numpy as np
+import os
+
+# 깔끔한 그래프 출력을 위해
+%matplotlib inline
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+mpl.rc('axes', labelsize=14)
+mpl.rc('xtick', labelsize=12)
+mpl.rc('ytick', labelsize=12)
+
+# 노트북 실행 결과를 동일하게 유지하기 위해
+np.random.seed(42)
+```
+
+# 데이터 준비
+
+mnist데이터의 원래 크기로 차원축소를 진행하면 시간이 너무 오래걸리기 때문에 기존 데이터셋 크기의 $\frac{1}{10}$크기로 훈련 세트와 테스트 세트를 만든다. mnist는 70000개의 데이터가 앞의 60000개와 뒤에 10000개로 미리 나눠져 있기 때문에 앞의 60000개에서 7000개를 랜덤으로 선택한다.
+
+
+```python
+from sklearn.datasets import fetch_openml
+from sklearn.model_selection import train_test_split
+
+mnist = fetch_openml('mnist_784', version=1, as_frame=False)
+mnist.target = mnist.target.astype(np.uint8)
+
+m = 7000
+idx = np.random.permutation(60000)[:m]
+
+X = mnist['data'][idx]
+y = mnist['target'][idx]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1000, train_size=6000, stratify=y, random_state=42)
+```
+
+훈련 세트와 테스트 세트가 비율대로 잘 나눠졌는지 확인을 해본다.
+
+
+```python
+value, count = np.unique(y_train, return_counts=True)
+count/len(y_train)
+```
+
+
+
+
+    array([0.10083333, 0.11083333, 0.09683333, 0.1005    , 0.0955    ,
+           0.09233333, 0.09833333, 0.1045    , 0.09716667, 0.10316667])
+
+
+
+
+```python
+value, count = np.unique(y_test, return_counts=True)
+count/len(y_test)
+```
+
+
+
+
+    array([0.101, 0.111, 0.097, 0.1  , 0.096, 0.092, 0.098, 0.105, 0.097,
+           0.103])
+
+
+
+각각의 비율이 잘 유지된 상태로 나눠줬으니 사용해도 좋을 것 같다.
+
+# 차원축소
+
+## 사영
+
+### PCA
+
+설명분산비율을 신경쓰지 않고 2차원과 3차원으로 차원축소를 진행시킨다.
+
+
+```python
+from sklearn.decomposition import PCA
+
+pca2 = PCA(n_components=2)
+pca2_X_train = pca2.fit_transform(X_train)
+pca2_X_test = pca2.transform(X_test)
+```
+
+그래프를 살펴보면 일부는 한곳에 몰려있지만 전체적으로 다 섞여있는 모습이다.
+
+
+```python
+plt.figure(figsize=(13,10))
+plt.scatter(pca2_X_train[:, 0], pca2_X_train[:, 1], c=y_train, cmap="jet")
+plt.axis('off')
+plt.colorbar()
+plt.show()
+```
+
+
+![png](output_14_0.png)
+
+
+이번에는 3차원으로 차원축소를 진행시킨 후 그래프로 살펴본다.
+
+
+```python
+pca3 = PCA(n_components=3)
+pca3_X_train = pca3.fit_transform(X_train)
+pca3_X_test = pca3.transform(X_test)
+```
+
+2차원과 형태가 많이 다르지는 않다.
+
+
+```python
+fig = plt.figure(figsize=(13, 10))
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(pca3_X_train[:, 0], pca3_X_train[:, 1], pca3_X_train[:, 2], c=y_train, cmap="jet")
+plt.show()
+```
+
+
+![png](output_18_0.png)
+
+
+이제 차원축소를 진행시킨 데이터셋을 랜덤포레스트와 서포트벡터머신으로 분류를 실시한다.
+
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+pca2_rnf = RandomForestClassifier(random_state=42)
+pca2_rnf.fit(pca2_X_train, y_train)
+y_pred2 = pca2_rnf.predict(pca2_X_test)
+
+pca3_rnf = RandomForestClassifier(random_state=42)
+pca3_rnf.fit(pca3_X_train, y_train)
+y_pred3 = pca3_rnf.predict(pca3_X_test)
+
+print("Dimension2 :", accuracy_score(y_test, y_pred2))
+print("Dimension3 :", accuracy_score(y_test, y_pred3))
+```
+
+    Dimension2 : 0.424
+    Dimension3 : 0.487
+    
+
+확실히 그래프로 본 것 처럼 잘 나눠지기 않았기 때문에 정확도가 50퍼센트도 되지 않는다.
+
+
+```python
+from sklearn.svm import SVC
+
+pca2_svc = SVC(gamma="auto", random_state=42)
+pca2_svc.fit(pca2_X_train, y_train)
+y_pred2 = pca2_svc.predict(pca2_X_test)
+
+pca3_svc = SVC(gamma="auto", random_state=42)
+pca3_svc.fit(pca3_X_train, y_train)
+y_pred3 = pca3_svc.predict(pca3_X_test)
+
+print("Dimension2 :", accuracy_score(y_test, y_pred2))
+print("Dimension3 :", accuracy_score(y_test, y_pred3))
+```
+
+    Dimension2 : 0.116
+    Dimension3 : 0.111
+    
+
+서포트벡터머신은 도로폭을 이용해서 분류하는 모델이기 때문에 군집화가 되어있지 않아서 성능이 매우 안좋게 나오는 것 같다.
+
+### LDA
+
+이번에는 PCA와 같은 사영 기법을 사용하는 LDA이다.
+
+
+```python
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+
+lda2 = LinearDiscriminantAnalysis(n_components=2)
+lda2_X_train = lda2.fit_transform(X_train, y_train)
+lda2_X_test = lda2.transform(X_test)
+```
+
+그래프를 살펴보면 중앙부분은 많이 섞여있지만 몇개의 숫자는 잘 모여있는 것을 볼 수 있다.
+
+
+```python
+plt.figure(figsize=(13,10))
+plt.scatter(lda2_X_train[:, 0], lda2_X_train[:, 1], c=y_train, cmap="jet")
+plt.axis('off')
+plt.colorbar()
+plt.show()
+```
+
+
+![png](output_28_0.png)
+
+
+
+```python
+lda3 = LinearDiscriminantAnalysis(n_components=3)
+lda3_X_train = lda3.fit_transform(X_train, y_train)
+lda3_X_test = lda3.transform(X_test)
+```
+
+3차원으로 차원축소한 것을 보면 2차원보다 좀 더 분류가 잘 되어있는 것을 볼 수 있다.
+
+
+```python
+fig = plt.figure(figsize=(13, 10))
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(lda3_X_train[:, 0], lda3_X_train[:, 1], lda3_X_train[:, 2], c=y_train, cmap="jet")
+plt.show()
+```
+
+
+![png](output_31_0.png)
+
+
+랜덤포레스트의 정확도를 살펴보면 PCA보다 높긴 하지만 마찬가지로 높은 정확도는 아니다. 3차원이 2차원보다 정확도가 10퍼센트 이상 높게 나왔다.
+
+
+```python
+rnf = RandomForestClassifier(random_state=42)
+rnf.fit(lda2_X_train, y_train)
+y_pred2 = rnf.predict(lda2_X_test)
+
+rnf = RandomForestClassifier(random_state=42)
+rnf.fit(lda3_X_train, y_train)
+y_pred3 = rnf.predict(lda3_X_test)
+
+print("Dimension2 :", accuracy_score(y_test, y_pred2))
+print("Dimension3 :", accuracy_score(y_test, y_pred3))
+```
+
+    Dimension2 : 0.551
+    Dimension3 : 0.697
+    
+
+서포트벡터머신은 정확도가 확실하게 PCA보다 올라가긴 했지만 높은 정확도는 아니다. 그래도 랜덤포레스트보다 좀더 높은 정확도가 나왔다.
+
+
+```python
+lda2_svc = SVC(gamma="auto", random_state=42)
+lda2_svc.fit(lda2_X_train, y_train)
+y_pred2 = lda2_svc.predict(lda2_X_test)
+
+lda3_svc = SVC(gamma="auto", random_state=42)
+lda3_svc.fit(lda3_X_train, y_train)
+y_pred3 = lda3_svc.predict(lda3_X_test)
+
+print("Dimension2 :", accuracy_score(y_test, y_pred2))
+print("Dimension3 :", accuracy_score(y_test, y_pred3))
+```
+
+    Dimension2 : 0.588
+    Dimension3 : 0.709
+    
+
+## 다양체 학습
+
+### TSNE
+
+이번에는 다양체 학습을 하는 알고리즘들이다. TSNE알고리즘으로 차원축소를 진행해 본다.
+
+TSNE는 `transform` 메소드가 없기 때문에 훈련 세트와 테스트 세트를 합쳐서 `fit_transform`메소드로 차원축소를 진행시킨 다음 다시 훈련 세트와 테스트 세트로 나눴다.
+
+
+```python
+from sklearn.manifold import TSNE
+
+X_combine = np.concatenate((X_train, X_test), axis = 0)
+tsne2 = TSNE(n_components=2, random_state=42).fit_transform(X_combine)
+tsne2_X_train = tsne2[:6000]
+tsne2_X_test = tsne2[6000:]
+```
+
+그래프를 보면 위에서 사용했던 방법과는 다르게 확실히 분류되어 있는 것이 보인다.
+
+
+```python
+plt.figure(figsize=(13,10))
+plt.scatter(tsne2_X_train[:, 0], tsne2_X_train[:, 1], c=y_train, cmap="jet")
+plt.axis('off')
+plt.colorbar()
+plt.show()
+```
+
+
+![png](output_42_0.png)
+
+
+
+```python
+tsne3 = TSNE(n_components=3, random_state=42).fit_transform(X_combine)
+tsne3_X_train = tsne3[:6000]
+tsne3_X_test = tsne3[6000:]
+```
+
+3차원으로 차원축소한 것을 살펴보면 종류가 다른 것이 모여있던 곳은 2차원보다 좀더 복잡하게 보인다.
+
+
+```python
+fig = plt.figure(figsize=(13, 10))
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(tsne3_X_train[:, 0], tsne3_X_train[:, 1], tsne3_X_train[:, 2], c=y_train, cmap="jet")
+plt.show()
+```
+
+
+![png](output_45_0.png)
+
+
+분류 모델의 정확도를 보면 랜덤포레스트와 서포트벡터머신 둘다 높은 정확도를 보인다. 그래프로 살펴봤을 때는 3차원이 좀 더 복잡해 보였지만 분류기는 오히려 3차원이 조금이지만 그래도 조금 더 높은 정확도를 보인다.
+
+
+```python
+tsne2_rnf = RandomForestClassifier(random_state=42)
+tsne2_rnf.fit(tsne2_X_train, y_train)
+y_pred2 = tsne2_rnf.predict(tsne2_X_test)
+
+tsne3_rnf = RandomForestClassifier(random_state=42)
+tsne3_rnf.fit(tsne3_X_train, y_train)
+y_pred3 = tsne3_rnf.predict(tsne3_X_test)
+
+print("Dimension2 :", accuracy_score(y_test, y_pred2))
+print("Dimension3 :", accuracy_score(y_test, y_pred3))
+```
+
+    Dimension2 : 0.945
+    Dimension3 : 0.952
+    
+
+
+```python
+tsne2_svc = SVC(gamma="auto", random_state=42)
+tsne2_svc.fit(tsne2_X_train, y_train)
+y_pred2 = tsne2_svc.predict(tsne2_X_test)
+
+tsne3_svc = SVC(gamma="auto", random_state=42)
+tsne3_svc.fit(tsne3_X_train, y_train)
+y_pred3 = tsne3_svc.predict(tsne3_X_test)
+
+print("Dimension2 :", accuracy_score(y_test, y_pred2))
+print("Dimension3 :", accuracy_score(y_test, y_pred3))
+```
+
+    Dimension2 : 0.951
+    Dimension3 : 0.954
+    
+
+### LLE
+
+LLE로 차원축소를 진행해 본다.
+
+
+```python
+from sklearn.manifold import LocallyLinearEmbedding
+
+lle2 = LocallyLinearEmbedding(n_components=2, random_state=42)
+lle2_X_train = lle2.fit_transform(X_train)
+lle2_X_test = lle2.transform(X_test)
+```
+
+롤케이크 데이터를 LLE로 차원축소 했을 때 처럼 길게 늘린 모양으로 나왔다. 확실하게는 아니지만 몇개의 숫자는 모여있는 모습이다.
+
+
+```python
+plt.figure(figsize=(13,10))
+plt.scatter(lle2_X_train[:, 0], lle2_X_train[:, 1], c=y_train, cmap="jet")
+plt.axis('off')
+plt.colorbar()
+plt.show()
+```
+
+
+![png](output_53_0.png)
+
+
+
+```python
+lle3 = LocallyLinearEmbedding(n_components=3, random_state=42)
+lle3_X_train = lle3.fit_transform(X_train)
+lle3_X_test = lle3.transform(X_test)
+```
+
+3차원을 그래프로 보면 2차원에서는 섞여있는 것으로 보였던 주황색이 따로 뭉쳐있는 것을 볼 수 있다.
+
+
+```python
+fig = plt.figure(figsize=(13, 10))
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(lle3_X_train[:, 0], lle3_X_train[:, 1], lle3_X_train[:, 2], c=y_train, cmap="jet")
+plt.show()
+```
+
+
+![png](output_56_0.png)
+
+
+랜덤포레스트 모델은 정확도가 생각보다 높게 나왔다. 2차원보다 3차원이 좀 더 모여있는 것 처럼 보였는데 분류 모델도 3차원의 정확도가 더 높게 나왔다.
+
+
+```python
+rnf = RandomForestClassifier(random_state=42)
+rnf.fit(lle2_X_train, y_train)
+y_pred2 = rnf.predict(lle2_X_test)
+
+rnf = RandomForestClassifier(random_state=42)
+rnf.fit(lle3_X_train, y_train)
+y_pred3 = rnf.predict(lle3_X_test)
+
+print("Dimension2 :", accuracy_score(y_test, y_pred2))
+print("Dimension3 :", accuracy_score(y_test, y_pred3))
+```
+
+    Dimension2 : 0.767
+    Dimension3 : 0.854
+    
+
+서포트벡터머신은 학습이 전혀 되지 않은 것 같다. 서포트벡터머신의 정확도가 어느정도 나오려면 분류가 어느정도 확실하게 돼야 할것 같다.
+
+
+```python
+lle2_svc = SVC(gamma="auto", random_state=42)
+lle2_svc.fit(lle2_X_train, y_train)
+y_pred2 = lle2_svc.predict(lle2_X_test)
+
+lle3_svc = SVC(gamma="auto", random_state=42)
+lle3_svc.fit(lle3_X_train, y_train)
+y_pred3 = lle3_svc.predict(lle3_X_test)
+
+print("Dimension2 :", accuracy_score(y_test, y_pred2))
+print("Dimension3 :", accuracy_score(y_test, y_pred3))
+```
+
+    Dimension2 : 0.111
+    Dimension3 : 0.111
+    
+
+### MDS
+
+MDS로 차원축소를 진행시켜 본다. MDS는 6000개의 샘플로 차원축소를 진행해도 오래 걸리기 때문에 2000개의 샘플로 축소 시켜서 진행했다. 그리고 MDS도 TSNE처럼 `transform`메소드가 없어서 TSNE와 같은 방식으로 훈련 세트와 테스트 세트를 나눴다.
+
+
+```python
+from sklearn.manifold import MDS
+
+X_combine = np.concatenate((X_train[:2000], X_test[:400]), axis = 0)
+mds2 = MDS(n_components=2, random_state=42).fit_transform(X_combine)
+mds2_X_train = mds2[:2000]
+mds2_X_test = mds2[2000:]
+```
+
+2차원으로 차원축소한 결과 2가지 정도는 모여있지만 나머지는 다 섞여있는 모양이다.
+
+
+```python
+plt.figure(figsize=(13,10))
+plt.scatter(mds2_X_train[:, 0], mds2_X_train[:, 1], c=y_train[:2000], cmap="jet")
+plt.axis('off')
+plt.colorbar()
+plt.show()
+```
+
+
+![png](output_65_0.png)
+
+
+
+```python
+mds3 = MDS(n_components=3, random_state=42).fit_transform(X_combine)
+mds3_X_train = mds3[:2000]
+mds3_X_test = mds3[2000:]
+```
+
+3차원도 2차원과 별반 차이가 없어 보인다.
+
+
+```python
+fig = plt.figure(figsize=(13, 10))
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(mds3_X_train[:, 0], mds3_X_train[:, 1], mds3_X_train[:, 2], c=y_train[:2000], cmap="jet")
+plt.show()
+```
+
+
+![png](output_68_0.png)
+
+
+랜덤포레스트 모델도 높은 성능이 나오지 않는다. 이번에도 2차원보다 3차원이 좀 더 높은 정확도를 보인다.
+
+
+```python
+rnf = RandomForestClassifier(random_state=42)
+rnf.fit(mds2_X_train, y_train[:2000])
+y_pred2 = rnf.predict(mds2_X_test[:400])
+
+rnf = RandomForestClassifier(random_state=42)
+rnf.fit(mds3_X_train, y_train[:2000])
+y_pred3 = rnf.predict(mds3_X_test[:400])
+
+print("Dimension2 :", accuracy_score(y_test[:400], y_pred2))
+print("Dimension3 :", accuracy_score(y_test[:400], y_pred3))
+```
+
+    Dimension2 : 0.4175
+    Dimension3 : 0.565
+    
+
+서포트백터머신은 MDS로 차원축소를 진행시키면 제대로 학습을 못하는 것 같다. 2차원과 3차원 모두 너무 낮은 정확도이다.
+
+
+```python
+mds2_svc = SVC(gamma="auto", random_state=42)
+mds2_svc.fit(mds2_X_train, y_train[:2000])
+y_pred2 = mds2_svc.predict(mds2_X_test[:400])
+
+mds3_svc = SVC(gamma="auto", random_state=42)
+mds3_svc.fit(mds3_X_train, y_train[:2000])
+y_pred3 = mds3_svc.predict(mds3_X_test[:400])
+
+print("Dimension2 :", accuracy_score(y_test[:400], y_pred2))
+print("Dimension3 :", accuracy_score(y_test[:400], y_pred3))
+```
+
+    Dimension2 : 0.1225
+    Dimension3 : 0.1225
+    
+
+### Isomap
+
+마지막으로 Isomap으로 차원축소를 시켜 본다.
+
+
+```python
+from sklearn.manifold import Isomap
+
+iso2 = Isomap(n_components=2)
+iso2_X_train = iso2.fit_transform(X_train)
+iso2_X_test = iso2.transform(X_test)
+```
+
+2차원으로 차원축소 시킨 결과 확실한 경계는 없지만 끼리끼리 모여있는 모습이다.
+
+
+```python
+plt.figure(figsize=(13,10))
+plt.scatter(iso2_X_train[:, 0], iso2_X_train[:, 1], c=y_train, cmap="jet")
+plt.axis('off')
+plt.colorbar()
+plt.show()
+```
+
+
+![png](output_77_0.png)
+
+
+
+```python
+iso3 = Isomap(n_components=3)
+iso3_X_train = iso3.fit_transform(X_train)
+iso3_X_test = iso3.transform(X_test)
+```
+
+이번에도 2차원보다 3차원이 좀 더 모여있는 것을 확인하기 쉬워 보인다.
+
+
+```python
+fig = plt.figure(figsize=(13, 10))
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(iso3_X_train[:, 0], iso3_X_train[:, 1], iso3_X_train[:, 2], c=y_train, cmap="jet")
+plt.show()
+```
+
+
+![png](output_80_0.png)
+
+
+Isomap은 어느정도 분류가 되어서 분류 모델의 정확도가 높게 나올 것이라 생각했는데 랜덤포레스트 모델의 정확도가 높게 나오지는 않았다. 이번에도 3차원이 더 높은 정확도를 보였다.
+
+
+```python
+rnf = RandomForestClassifier(random_state=42)
+rnf.fit(iso2_X_train, y_train)
+y_pred2 = rnf.predict(iso2_X_test)
+
+rnf = RandomForestClassifier(random_state=42)
+rnf.fit(iso3_X_train, y_train)
+y_pred3 = rnf.predict(iso3_X_test)
+
+print("Dimension2 :", accuracy_score(y_test, y_pred2))
+print("Dimension3 :", accuracy_score(y_test, y_pred3))
+```
+
+    Dimension2 : 0.535
+    Dimension3 : 0.693
+    
+
+어느 정도 나눠져 있어서 랜덤포레스트와 비슷한 정확도가 나올 줄 알았지만 서포트벡터머신은 Isomap방법도 학습하기에는 알맞지 않은 것 같다.
+
+
+```python
+iso2_svc = SVC(gamma="auto", random_state=42)
+iso2_svc.fit(iso2_X_train, y_train)
+y_pred2 = iso2_svc.predict(iso2_X_test)
+
+iso3_svc = SVC(gamma="auto", random_state=42)
+iso3_svc.fit(iso3_X_train, y_train)
+y_pred3 = iso3_svc.predict(iso3_X_test)
+
+print("Dimension2 :", accuracy_score(y_test, y_pred2))
+print("Dimension3 :", accuracy_score(y_test, y_pred3))
+```
+
+    Dimension2 : 0.111
+    Dimension3 : 0.111
+    
+
+전체적으로 2차원 보다는 3차원으로 차원축소를 한 데이터 셋이 분류 모델에서 좀 더 높은 정확도가 나왔다. 아마도 mnist데이터 셋은 784 차원이기 때문에 2차원보다 3차원이 정보손실이 적기 때문이지 않을까 싶다.
