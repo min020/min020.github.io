@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "머신러닝1"
+title: "선형 모델"
 excerpt: "선형 모델 학습"
 category: ml_practice
 date: 2021-03-10
