@@ -1,5 +1,11 @@
-2017250004
-
+---
+layout: post
+title: "랜덤포레스트&스태킹"
+excerpt: "랜덤포레스트와 스태킹 직접 구현해보기"
+category: ml_practice
+date: 2021-07-02
+last_modified_at: 2021-07-02
+---
 
 ```python
 # 파이썬 ≥3.5 필수
@@ -18,9 +24,9 @@ import os
 np.random.seed(42)
 ```
 
-# 1. 랜덤 포레스트 직접 구현하기
+## 1. 랜덤 포레스트 직접 구현하기
 
-## 결정트리 모델 훈련
+# 결정트리 모델 훈련
 
 데이터는 moons데이터셋을 사용한다. 샘플수는 10000개에 잡음을 추가해주고 `train_test_split`를 사용해서 훈련세트와 테스트세트를 8:2비율로 나눠준다.
 
@@ -54,6 +60,8 @@ grid_search_cv = GridSearchCV(DecisionTreeClassifier(random_state=42), params, v
 grid_search_cv.fit(X_train, y_train)
 ```
 
+__output__
+
     Fitting 3 folds for each of 294 candidates, totalling 882 fits
     
 
@@ -86,7 +94,7 @@ grid_search_cv.fit(X_train, y_train)
                  pre_dispatch='2*n_jobs', refit=True, return_train_score=False,
                  scoring=None, verbose=1)
 
-
+</br>
 
 그리드 탐색으로 찾은 최적의 파라미터를 확인해 보면 `max_leaf_nodes` = 17, `min_samples_split` = 2 이 조합이 최적의 조합이란 것을 알 수 있다.
 
