@@ -219,7 +219,7 @@ blockquote {
 body {
     font-family: "Helvetica Neue", Helvetica, "Hiragino Sans GB", Arial, sans-serif;
     font-size: 15px;
-    line-height: 1.5;
+    line-height: 1.7;
     color: #000;
     background-color: white;
 }
@@ -322,9 +322,10 @@ pre {
     border: 1px solid #919191;
     white-space: pre-wrap;
     word-wrap: break-word;
+    background-color: #7a7a7a;
 }
 pre code {
-    background-color: #fff;
+    background-color: #7a7a7a;
     color:#000;
     font-size: 13px;
     padding: 0;
