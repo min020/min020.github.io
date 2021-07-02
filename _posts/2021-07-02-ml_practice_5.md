@@ -104,7 +104,7 @@ grid_search_cv.best_estimator_
 ```
 
 
-
+__output__
 
     DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None, criterion='gini',
                            max_depth=None, max_features=None, max_leaf_nodes=17,
@@ -211,10 +211,6 @@ rnd_clf = RandomForestClassifier(n_estimators=1000, max_leaf_nodes=17, min_sampl
 rnd_clf.fit(X_train, y_train)
 
 y_pred_rf = rnd_clf.predict(X_test)
-```
-
-
-```python
 accuracy_score(y_test, y_pred_rf)
 ```
 
@@ -278,10 +274,7 @@ from sklearn.svm import LinearSVC
 random_forest_clf = RandomForestClassifier(n_estimators=100, random_state=42)
 extra_trees_clf = ExtraTreesClassifier(n_estimators=100, random_state=42)
 svm_clf = LinearSVC(max_iter=100, tol=20, random_state=42)
-```
 
-
-```python
 estimators = [random_forest_clf, extra_trees_clf, svm_clf]
 for estimator in estimators:
     estimator.fit(X_train, y_train)
@@ -293,15 +286,12 @@ for estimator in estimators:
 
 
 ```python
+from sklearn.linear_model import LogisticRegression
+
 X_val_predictions = np.empty((len(X_val), len(estimators)))
 
 for index, estimator in enumerate(estimators):
     X_val_predictions[:, index] = estimator.predict(X_val)
-```
-
-
-```python
-from sklearn.linear_model import LogisticRegression
 
 logistic_blender = LogisticRegression(max_iter=1500)
 logistic_blender.fit(X_val_predictions, y_val)
@@ -338,10 +328,6 @@ for index, estimator in enumerate(estimators):
 
 ```python
 y_pred = logistic_blender.predict(X_test_predictions)
-```
-
-
-```python
 accuracy_score(y_test, y_pred)
 ```
 
@@ -504,7 +490,7 @@ __output__
                            warm_start=False)
 
 
-
+<br/>
 
 ```python
 X_test_predictions = np.empty((len(X_test), len(estimators)))
