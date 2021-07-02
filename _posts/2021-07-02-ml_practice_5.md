@@ -24,9 +24,9 @@ import os
 np.random.seed(42)
 ```
 
-# 1. 랜덤 포레스트 직접 구현하기
+## 1. 랜덤 포레스트 직접 구현하기
 
-## 결정트리 모델 훈련
+### 결정트리 모델 훈련
 
 데이터는 moons데이터셋을 사용한다. 샘플수는 10000개에 잡음을 추가해주고 `train_test_split`를 사용해서 훈련세트와 테스트세트를 8:2비율로 나눠준다.
 
@@ -94,7 +94,7 @@ __output__
                  pre_dispatch='2*n_jobs', refit=True, return_train_score=False,
                  scoring=None, verbose=1)
 
-</br>
+<br/>
 
 그리드 탐색으로 찾은 최적의 파라미터를 확인해 보면 `max_leaf_nodes` = 17, `min_samples_split` = 2 이 조합이 최적의 조합이란 것을 알 수 있다.
 
@@ -113,9 +113,9 @@ grid_search_cv.best_estimator_
                            min_weight_fraction_leaf=0.0, presort='deprecated',
                            random_state=42, splitter='best')
 
+<br/>
 
-
-## 랜덤 포레스트 구현하기
+### 랜덤 포레스트 구현하기
 
 몇 개의 샘플로 몇 개의 모델을 학습 시킬지 정해야 한다. 우선 한 모델당 100개의 샘플을 가지고 1000개의 모델을 학습 시킬 것이다. 그러기 위해서 `ShuffleSplit`을 이용해 훈련세트에서 100개를 무작위로 선택해 1000개의 작은 훈련세트로 만들어 준다.
 + `n_splits` : 나눠지는 세트 수
@@ -136,6 +136,7 @@ for mini_train_index, _ in rs.split(X_train):
     y_mini_train = y_train[mini_train_index]
     mini_sets.append((X_mini_train, y_mini_train))
 ```
+<br/>
 
 이제 나눠진 작은 훈련세트들로 학습할 차례이다.
 
@@ -154,6 +155,7 @@ for (tree_index, tree), (X_mini_train, y_mini_train) in zip(enumerate(forest), m
     tree.fit(X_mini_train, y_mini_train)
     Y_pred[tree_index] = tree.predict(X_test)
 ```
+<br/>
 
 `Y_pred`에 `X_test`세트의 샘플 개수인 2000개를 예측한 것이 1000개 들어가 있다. 이제 각 샘플마다 1000개의 모델들이 예측한 값 중 최빈값을 찾아야 하는데 `mode`를 사용하면 찾을 수 있다.
 + `y_pred_majority_votes` : 각 샘플에 대한 최빈값
@@ -166,6 +168,7 @@ from scipy.stats import mode
 y_pred_majority_votes, n_votes = mode(Y_pred, axis=0)
 ```
 
+<br/>
 5개의 샘플만 살펴보면 1, 2번 샘플은 1로 많이 예측했고 3, 4, 5번 샘플은 0으로 많이 예측한 것을 알 수 있다.
 
 
@@ -174,10 +177,11 @@ y_pred_majority_votes[0][:5]
 ```
 
 
-
+__output__
 
     array([1., 1., 0., 0., 0.])
 
+<br/>
 
 
 빈도수를 살펴보면 1000개의 모델중 몇개의 모델이 해당 값으로 예측했는지 알 수 있다.
@@ -188,13 +192,14 @@ n_votes[0][:5]
 ```
 
 
-
+__output__
 
     array([951, 912, 963, 951, 738])
 
+<br/>
 
 
-## 정확도 비교
+### 정확도 비교
 
 사이킷런에서 제공하는 랜덤 포레스트 모델과 직접 구현한 모델을 비교해 볼 것이다. 파라미터는 앞서 그리드 탐색에서 찾았던 파라미터를 같이 사용해 준다.
 
@@ -214,10 +219,11 @@ accuracy_score(y_test, y_pred_rf)
 ```
 
 
-
+__output__
 
     0.8725
 
+<br/>
 
 
 사이킷런의 랜덤 포레스트 모델의 정확도는 약 87퍼센트가 나왔다. 이제 직접 구현한 랜덤 포레스트 모델의 정확도를 측정해보자.
@@ -228,15 +234,16 @@ accuracy_score(y_test, y_pred_majority_votes.T)
 ```
 
 
-
+__output__
 
     0.872
 
 
+<br/>
 
-# 2. 스태킹 모델 직접 구현하기
+## 2. 스태킹 모델 직접 구현하기
 
-## 데이터 준비
+### 데이터 준비
 
 스태킹 모델 구현에는 0~9까지 숫자데이터가 들어가 있는 MNIST세트를 사용한다. 타겟이 문자형으로 저장되어 있기 때문에 정수형으로 변환해 준다.
 
@@ -248,6 +255,7 @@ mnist = fetch_openml('mnist_784', version=1)
 mnist.target = mnist.target.astype(int)
 ```
 
+<br/>
 훈련, 검증, 테스트 3개의 세트로 나눠준다. 각각 50000, 10000, 10000개의 샘플을 가진다.
 
 
@@ -256,7 +264,8 @@ X_train_val, X_test, y_train_val, y_test = train_test_split(mnist.data, mnist.ta
 X_train, X_val, y_train, y_val = train_test_split(X_train_val, y_train_val, test_size=10000, random_state=42)
 ```
 
-## 예측기와 블렌더 학습
+<br/>
+### 예측기와 블렌더 학습
 
 예측기 모델로 랜덤 포레스트, 엑스트라 트리, 서포트벡터머신을 사용할 것이다. 각 예측기 별로 훈련세트에 대해 학습을 시킨다.
 
@@ -277,6 +286,7 @@ for estimator in estimators:
     estimator.fit(X_train, y_train)
 ```
 
+<br/>
 훈련세트에 대해 훈련이 완료된 예측기들로 검증세트에 대해 예측을 실시한다. 그리고 나온 예측값으로 블렌더를 학습시킨다.
 
 
@@ -296,7 +306,7 @@ logistic_blender.fit(X_val_predictions, y_val)
 ```
 
 
-
+__output__
 
     LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
                        intercept_scaling=1, l1_ratio=None, max_iter=1500,
@@ -305,8 +315,9 @@ logistic_blender.fit(X_val_predictions, y_val)
                        warm_start=False)
 
 
+<br/>
 
-## 정확도 비교
+### 정확도 비교
 
 학습된 블렌더로 테스트 세트에 대해 정확도를 살펴볼 차례이다. 블렌더로 테스트 세트를 예측하기 위해 각 예측기 별로 테스트 세트에 대한 예측값을 생성한다.
 
@@ -318,6 +329,7 @@ for index, estimator in enumerate(estimators):
     X_test_predictions[:, index] = estimator.predict(X_test)
 ```
 
+<br/>
 블렌더로 테스트 세트에 대한 정확도를 살펴본다.
 
 
@@ -331,11 +343,12 @@ accuracy_score(y_test, y_pred)
 ```
 
 
-
+__output__
 
     0.9557
 
 
+<br/>
 
 약 95퍼센트의 정확도가 나왔다. 하지만 개별 예측기 보다 정확도가 높아야 의미가 있기 때문에 개별 예측기들의 테스트 세트에 대한 정확도를 살펴본다.
 
@@ -345,11 +358,12 @@ accuracy_score(y_test, y_pred)
 ```
 
 
-
+__output__
 
     [0.9645, 0.9691, 0.866]
 
 
+<br/>
 
 랜덤 포레트스와 엑스트라 트리 모델이 오히려 더 정확도가 높다. 3가지의 문제 상황이 있을 것 같다.
 + 구현을 잘못한 경우
@@ -371,11 +385,12 @@ accuracy_score(y_test, y_pred_stacking)
 ```
 
 
-
+__output__
 
     0.9514
 
 
+<br/>
 
 직접 구현한 것보다 정확도가 조금 높긴 하지만 그래도 똑같이 예측기의 정확도보다 높지 않은 것을 보아 구현을 잘못한 것은 아닌거 같다. 이번에는 서포트 벡터 머신이 성능을 저하 시킨건지 확인해 보기 위해 예측기에서 제외해 본다.
 
@@ -391,7 +406,7 @@ logistic_blender.fit(X_val_predictions, y_val)
 ```
 
 
-
+__output__
 
     LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
                        intercept_scaling=1, l1_ratio=None, max_iter=1500,
@@ -400,6 +415,7 @@ logistic_blender.fit(X_val_predictions, y_val)
                        warm_start=False)
 
 
+<br/>
 
 
 ```python
@@ -413,11 +429,12 @@ accuracy_score(y_test, y_pred)
 ```
 
 
-
+__output__
 
     0.9612
 
 
+<br/>
 
 직접 구현한 스태킹 모델은 정확도가 올라갔다. 하지만 아직까진 예측기보다 성능이 조금이긴 하지만 떨어진다. 사이킷런의 스태킹 모델 정확도를 살펴보자.
 
@@ -433,11 +450,12 @@ accuracy_score(y_test, y_pred_stacking)
 ```
 
 
-
+__output__
 
     0.9552
 
 
+<br/>
 
 마찬가지로 정확도가 올라가긴 했지만 아까와 같이 구현한 모델보다 정확도가 떨어진다.
 
@@ -457,6 +475,8 @@ for index, estimator in enumerate(estimators):
 
 random_forest_blender.fit(X_val_predictions, y_val)
 ```
+
+__output__
 
     /usr/local/lib/python3.7/dist-packages/sklearn/linear_model/_logistic.py:940: ConvergenceWarning: lbfgs failed to converge (status=1):
     STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
@@ -494,11 +514,12 @@ accuracy_score(y_test, y_pred)
 ```
 
 
-
+__output__
 
     0.9686
 
 
+<br/>
 
 조금씩 오르긴 하지만 기대한 만큼 나오지는 않았다. warning메세지가 나오는건 로지스틱 모델이 최소비용에 수렴하기 전에 학습이 끝났기 때문인데 `max_iter`값을 올리다보니 실행 시간이 너무 길어져서 1500정도까지밖에 올리지 못했다. 수렴할 때 까지 학습을 시키면 정확도가 더 올라갈 것 같다.
 
@@ -512,6 +533,8 @@ clf.fit(X_val, y_val)
 y_pred_stacking = clf.predict(X_test)
 accuracy_score(y_test, y_pred_stacking)
 ```
+
+__output__
 
     /usr/local/lib/python3.7/dist-packages/sklearn/linear_model/_logistic.py:940: ConvergenceWarning: lbfgs failed to converge (status=1):
     STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
@@ -569,6 +592,7 @@ accuracy_score(y_test, y_pred_stacking)
     0.9568
 
 
+<br/>
 
 마찬가지로 사이킷런의 로지스틱 모델도 정확도가 오르긴 했지만 기대한 만큼은 아니다. 나중에 `max_iter`값을 더 늘리거나 MNIST데이터를 전처리해서 크기를 좀 더 줄여야 정확한 성능을 알 수 있을 것 같다.
 
