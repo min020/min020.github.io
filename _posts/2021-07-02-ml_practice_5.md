@@ -63,14 +63,9 @@ grid_search_cv.fit(X_train, y_train)
 __output__
 
     Fitting 3 folds for each of 294 candidates, totalling 882 fits
-    
 
     [Parallel(n_jobs=1)]: Using backend SequentialBackend with 1 concurrent workers.
     [Parallel(n_jobs=1)]: Done 882 out of 882 | elapsed:    8.9s finished
-    
-
-
-
 
     GridSearchCV(cv=3, error_score=nan,
                  estimator=DecisionTreeClassifier(ccp_alpha=0.0, class_weight=None,
@@ -476,10 +471,6 @@ __output__
         https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
       extra_warning_msg=_LOGISTIC_SOLVER_CONVERGENCE_MSG)
     
-
-
-
-
     RandomForestClassifier(bootstrap=True, ccp_alpha=0.0, class_weight=None,
                            criterion='gini', max_depth=None, max_features='auto',
                            max_leaf_nodes=None, max_samples=None,
