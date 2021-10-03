@@ -259,6 +259,8 @@ print("텐서의 마지막 축 요소 수 :", rank_4_tensor.shape[-1])
 print("모든 요소의 수(3*2*4*5) :", tf.size(rank_4_tensor).numpy())
 ```
 
+![png](https://raw.githubusercontent.com/min020/deep_learning/main/picture/4-axis_block.png)
+
 __output__
 
     모든 요소의 타입 : <dtype: 'float32'>
@@ -375,7 +377,9 @@ __output__
     [[ 0  1  2  3  4  5  6  7  8  9]
      [10 11 12 13 14 15 16 17 18 19]
      [20 21 22 23 24 25 26 27 28 29]], shape=(3, 10), dtype=int32)
-    
+
+![png](https://raw.githubusercontent.com/min020/deep_learning/main/picture/reshape-good.png)
+
 <br/>
 
 요소 수가 같으면 `rf.reshape`이 작동하지만, 축의 순서를 고려하지 않으면 별로 쓸모가 없다.
@@ -403,6 +407,8 @@ __output__
      [12 13 14 15 16 17]
      [18 19 20 21 22 23]
      [24 25 26 27 28 29]], shape=(5, 6), dtype=int32)
+     
+![png](https://raw.githubusercontent.com/min020/deep_learning/main/picture/reshape-bad.png)     
      
 <br/>
 <br/>
@@ -548,6 +554,8 @@ __output__
     [[ 4  9]
      [14 19]
      [24 29]], shape=(3, 2), dtype=int32)
+        
+![png](https://raw.githubusercontent.com/min020/deep_learning/main/picture/index1.png)        
         
 <br/>
 <br/>
@@ -736,6 +744,8 @@ __output__
 
     (4, None)
     
+![png](https://raw.githubusercontent.com/min020/deep_learning/main/picture/ragged.png)    
+    
 <br/>
 <br/>
 
@@ -805,6 +815,8 @@ __output__
 
     tf.Tensor([b'Gray' b'wolf'], shape=(2,), dtype=string)
     <tf.RaggedTensor [[b'Gray', b'wolf'], [b'Quick', b'brown', b'fox'], [b'Lazy', b'dog']]>
+
+![png](https://raw.githubusercontent.com/min020/deep_learning/main/picture/string-split.png)
 
 <br/>
 
@@ -877,4 +889,5 @@ __output__
     [[1 0 0 0]
      [0 0 2 0]
      [0 0 0 0]], shape=(3, 4), dtype=int32)
-    
+
+![png](https://raw.githubusercontent.com/min020/deep_learning/main/picture/sparse.png)
