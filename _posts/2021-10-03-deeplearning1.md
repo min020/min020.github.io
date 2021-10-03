@@ -1,3 +1,13 @@
+---
+layout: post
+title: "텐서플로우"
+excerpt: "텐서 정리"
+category: deep_learning
+date: 2021-10-03
+last_modified_at: 2021-10-03
+use_math: true
+---
+
 ```python
 import tensorflow as tf
 import numpy as np
@@ -9,7 +19,7 @@ import numpy as np
 
 # 기본 텐서 조작
 
-###스칼라(0차원)
+### 스칼라(0차원)
 
 스칼라 텐서는 하나의 값을 가지며 축이 없다. 기본 dtype은 int32이다.
 
@@ -19,10 +29,12 @@ rank_0_tensor = tf.constant(4)
 print(rank_0_tensor)
 ```
 
+__output__
+
     tf.Tensor(4, shape=(), dtype=int32)
     
 
-###벡터(1차원)
+### 벡터(1차원)
 
 벡터 텐서는 값들의 list이고 하나의 축을 가지고 있다. 텐서 생성시 dtype을 따로 지정하지 않으면 값에 따라서 자동으로 변한다.
 
@@ -31,6 +43,8 @@ print(rank_0_tensor)
 rank_1_tensor = tf.constant([2.0, 3.0, 4.0])
 print(rank_1_tensor)
 ```
+
+__output__
 
     tf.Tensor([2. 3. 4.], shape=(3,), dtype=float32)
     
@@ -41,10 +55,12 @@ rank_1_tensor = tf.constant([2, 3, 4])
 print(rank_1_tensor)
 ```
 
+__output__
+
     tf.Tensor([2 3 4], shape=(3,), dtype=int32)
     
 
-###행렬(2차원)
+### 행렬(2차원)
 
 행렬 텐서는 2개의 축을 가지고 있다. dtype을 아래와 같이 따로 지정해 줄 수 있다.
 
@@ -56,13 +72,15 @@ rank_2_tensor = tf.constant([[1, 2],
 print(rank_2_tensor)
 ```
 
+__output__
+
     tf.Tensor(
     [[1. 2.]
      [3. 4.]
      [5. 6.]], shape=(3, 2), dtype=float16)
     
 
-###3차원
+### 3차원
 
 텐서는 2개의 축 뿐만 아니라 더 많은 축을 가질 수 있다. 다음은 3개의 축을 가지고 있는 텐서이다.
 
@@ -78,6 +96,8 @@ rank_3_tensor = tf.constant([
 print(rank_3_tensor)
 ```
 
+__output__
+
     tf.Tensor(
     [[[ 0  1  2  3  4]
       [ 5  6  7  8  9]]
@@ -89,7 +109,7 @@ print(rank_3_tensor)
       [25 26 27 28 29]]], shape=(3, 2, 5), dtype=int32)
     
 
-###NumPy 배열로 변환
+### NumPy 배열로 변환
 
 `np.array` 또는 `tensor.numpy` 메소드를 사용하여 텐서를 NumPy 배열로 변환할 수 있다.
 
@@ -98,7 +118,7 @@ print(rank_3_tensor)
 np.array(rank_2_tensor)
 ```
 
-
+__output__
 
 
     array([[1., 2.],
@@ -113,7 +133,7 @@ rank_2_tensor.numpy()
 ```
 
 
-
+__output__
 
     array([[1., 2.],
            [3., 4.],
@@ -121,7 +141,7 @@ rank_2_tensor.numpy()
 
 
 
-###산술 연산
+### 산술 연산
 
 텐서끼리 기본적인 산술 연산을 수행할 수 있다.
 
@@ -137,6 +157,8 @@ print(tf.matmul(a, b), "\n")     #행렬의 곱셈
 print(tf.subtract(a, b), "\n")   #뺄셈
 print(tf.divide(a, b))           #나눗셈
 ```
+
+__output__
 
     tf.Tensor(
     [[2 3]
@@ -168,6 +190,8 @@ print(a * b, "\n")  #값끼리 곱셈(multiply)
 print(a @ b)        #행렬의 곱셈(matmul)
 ```
 
+__output__
+
     tf.Tensor(
     [[2 3]
      [4 5]], shape=(2, 2), dtype=int32) 
@@ -192,6 +216,8 @@ print(tf.argmax(c))       #가장 큰 값의 인덱스
 print(tf.nn.softmax(c))   #softmax 연산
 ```
 
+__output__
+
     tf.Tensor(10.0, shape=(), dtype=float32)
     tf.Tensor([1 0], shape=(2,), dtype=int64)
     tf.Tensor(
@@ -199,7 +225,7 @@ print(tf.nn.softmax(c))   #softmax 연산
      [9.9987662e-01 1.2339458e-04]], shape=(2, 2), dtype=float32)
     
 
-###Shape 정보
+### Shape 정보
 
 + Shpae : 텐서에서 각 차원(축)의 길이(요소의 수)
 + Rank : 텐서 축(차원)의 수 ex)스칼라 = 0, 벡터 = 1
@@ -220,6 +246,8 @@ print("텐서의 마지막 축 요소 수 :", rank_4_tensor.shape[-1])
 print("모든 요소의 수(3*2*4*5) :", tf.size(rank_4_tensor).numpy())
 ```
 
+__output__
+
     모든 요소의 타입 : <dtype: 'float32'>
     축(차원)의 수 : 4
     텐서의 모양 : (3, 2, 4, 5)
@@ -228,7 +256,7 @@ print("모든 요소의 수(3*2*4*5) :", tf.size(rank_4_tensor).numpy())
     모든 요소의 수(3*2*4*5) : 120
     
 
-###인덱싱
+### 인덱싱
 
 TensorFlow는 표준 파이썬 인덱싱 규칙과 numpy 인덱싱의 기본 규칙을 따른다.
 + 인덱스는 0부터 시작
@@ -241,6 +269,8 @@ rank_1_tensor = tf.constant([0, 1, 1, 2, 3, 5, 8, 13, 21, 34])
 print(rank_1_tensor.numpy())
 ```
 
+__output__
+
     [ 0  1  1  2  3  5  8 13 21 34]
     
 
@@ -252,6 +282,8 @@ print("첫번째 :", rank_1_tensor[0].numpy())
 print("두번째 :", rank_1_tensor[1].numpy())
 print("마지막 :", rank_1_tensor[-1].numpy())
 ```
+
+__output__
 
     첫번째 : 0
     두번째 : 1
@@ -270,6 +302,8 @@ print("2개씩 건너뛰어서 인덱싱 :", rank_1_tensor[::2].numpy())
 print("거꾸로 :", rank_1_tensor[::-1].numpy())
 ```
 
+__output__
+
     전체 : [ 0  1  1  2  3  5  8 13 21 34]
     4번 인덱스 이전 : [0 1 1 2]
     4번 인덱스부터 끝까지 : [ 3  5  8 13 21 34]
@@ -287,6 +321,8 @@ print("거꾸로 :", rank_1_tensor[::-1].numpy())
 print(rank_2_tensor.numpy())
 ```
 
+__output__
+
     [[1. 2.]
      [3. 4.]
      [5. 6.]]
@@ -298,6 +334,8 @@ print(rank_2_tensor.numpy())
 ```python
 print(rank_2_tensor[1, 1].numpy())
 ```
+
+__output__
 
     4.0
     
@@ -312,6 +350,8 @@ print("마지막 행 :", rank_2_tensor[-1, :].numpy())
 print("첫번째 행 제외 :")
 print(rank_2_tensor[1:, :].numpy())
 ```
+
+__output__
 
     두번째 행 : [3. 4.]
     두번째 열 : [2. 4. 6.]
@@ -328,6 +368,8 @@ print(rank_2_tensor[1:, :].numpy())
 print(rank_3_tensor.numpy())
 ```
 
+__output__
+
     [[[ 0  1  2  3  4]
       [ 5  6  7  8  9]]
     
@@ -343,13 +385,15 @@ print(rank_3_tensor.numpy())
 print(rank_3_tensor[:, :, 4])
 ```
 
+__output__
+
     tf.Tensor(
     [[ 4  9]
      [14 19]
      [24 29]], shape=(3, 2), dtype=int32)
     
 
-###Shape 조작하기
+### Shape 조작하기
 
 `shape`는 각 차원의 크기를 보여주는 TensorShape 객체를 리턴한다.
 
@@ -358,6 +402,8 @@ print(rank_3_tensor[:, :, 4])
 var_x = tf.Variable(tf.constant([[1], [2], [3]]))
 print(var_x.shape)
 ```
+
+__output__
 
     (3, 1)
     
@@ -369,6 +415,8 @@ print(var_x.shape)
 print(var_x.shape.as_list())
 print(var_x.shape.as_list()[0])
 ```
+
+__output__
 
     [3, 1]
     3
@@ -385,6 +433,8 @@ print(var_x.shape, "\n")
 print(reshaped.numpy())
 print(reshaped.shape)
 ```
+
+__output__
 
     [[1]
      [2]
@@ -404,6 +454,8 @@ print(reshaped.shape)
 print(rank_3_tensor.numpy(), "\n")
 print(tf.reshape(rank_3_tensor, [-1]).numpy())
 ```
+
+__output__
 
     [[[ 0  1  2  3  4]
       [ 5  6  7  8  9]]
@@ -428,6 +480,8 @@ print(tf.reshape(rank_3_tensor, [3*2, 5]), "\n")
 print(tf.reshape(rank_3_tensor, [3, -1]))
 ```
 
+__output__
+
     tf.Tensor(
     [[ 0  1  2  3  4]
      [ 5  6  7  8  9]
@@ -450,6 +504,8 @@ print(tf.reshape(rank_3_tensor, [2, 3, 5]), "\n")
 print(tf.reshape(rank_3_tensor, [5, 6]))
 ```
 
+__output__
+
     tf.Tensor(
     [[[ 0  1  2  3  4]
       [ 5  6  7  8  9]
@@ -467,7 +523,7 @@ print(tf.reshape(rank_3_tensor, [5, 6]))
      [24 25 26 27 28 29]], shape=(5, 6), dtype=int32)
     
 
-###DTypes
+### DTypes
 
 `tf.Tensor`의 데이터 유형을 확인하기 위해서는 `Tensor.dtype` 속성을 사용한다.
 
@@ -485,6 +541,8 @@ print(the_f16_tensor, "\n")
 the_u8_tensor = tf.cast(the_f16_tensor, dtype=tf.uint8)    #부동소수점을 정수형으로 변환하면 수소점은 제외된다.
 print(the_u8_tensor)
 ```
+
+__output__
 
     tf.Tensor([2.2 3.3 4.4], shape=(3,), dtype=float16) 
     
@@ -508,6 +566,8 @@ print(x * y)
 print(x * z)
 ```
 
+__output__
+
     tf.Tensor([2 4 6], shape=(3,), dtype=int32)
     tf.Tensor([2 4 6], shape=(3,), dtype=int32)
     tf.Tensor([2 4 6], shape=(3,), dtype=int32)
@@ -526,6 +586,8 @@ print(x, "\n")
 print(y, "\n")
 print(tf.multiply(x, y))
 ```
+
+__output__
 
     tf.Tensor(
     [[1]
@@ -555,6 +617,8 @@ y_stretch = tf.constant([[1, 2, 3, 4],
 print(x_stretch * y_stretch)
 ```
 
+__output__
+
     tf.Tensor(
     [[ 1  2  3  4]
      [ 2  4  6  8]
@@ -570,13 +634,15 @@ print(x_stretch * y_stretch)
 print(tf.broadcast_to(tf.constant([1, 2, 3]), [3, 3]))
 ```
 
+__output__
+
     tf.Tensor(
     [[1 2 3]
      [1 2 3]
      [1 2 3]], shape=(3, 3), dtype=int32)
     
 
-###tf.convert_to_tensor
+### tf.convert_to_tensor
 
 `tf.matmul` 및 `tf.reshape`와 같은 대부분의 연산은 클래스 `tf.Tensor`의 인수를 사용한다.
 
@@ -603,6 +669,8 @@ except Exception as e:
   print(f"{type(e).__name__}: {e}")
 ```
 
+__output__
+
     ValueError: Can't convert non-rectangular Python sequence to Tensor.
     
 
@@ -611,6 +679,8 @@ except Exception as e:
 ragged_tensor = tf.ragged.constant(ragged_list)
 print(ragged_tensor)
 ```
+
+__output__
 
     <tf.RaggedTensor [[0, 1, 2, 3], [4, 5], [6, 7, 8], [9]]>
     
@@ -622,10 +692,12 @@ print(ragged_tensor)
 print(ragged_tensor.shape)
 ```
 
+__output__
+
     (4, None)
     
 
-###문자열 텐서
+### 문자열 텐서
 
 `tf.string`은 텐서에서 문자열과 같은 데이터를 나타낼 수 있다.
 
@@ -639,6 +711,8 @@ scalar_string_tensor = tf.constant("Gray wolf")
 print(scalar_string_tensor)
 ```
 
+__output__
+
     tf.Tensor(b'Gray wolf', shape=(), dtype=string)
     
 
@@ -650,6 +724,8 @@ tensor_of_strings = tf.constant(["Gray wolf",
 
 print(tensor_of_strings)
 ```
+
+__output__
 
     tf.Tensor([b'Gray wolf' b'Quick brown fox' b'Lazy dog'], shape=(3,), dtype=string)
     
@@ -663,7 +739,7 @@ print(tensor_of_strings)
 tf.constant("🥳👍")
 ```
 
-
+__output__
 
 
     <tf.Tensor: shape=(), dtype=string, numpy=b'\xf0\x9f\xa5\xb3\xf0\x9f\x91\x8d'>
@@ -682,6 +758,8 @@ print(tf.strings.split(scalar_string_tensor, sep=" "))
 print(tf.strings.split(tensor_of_strings))
 ```
 
+__output__
+
     tf.Tensor([b'Gray' b'wolf'], shape=(2,), dtype=string)
     <tf.RaggedTensor [[b'Gray', b'wolf'], [b'Quick', b'brown', b'fox'], [b'Lazy', b'dog']]>
     
@@ -694,6 +772,8 @@ text = tf.constant("1 10 100")
 print(tf.strings.to_number(tf.strings.split(text, " ")))
 ```
 
+__output__
+
     tf.Tensor([  1.  10. 100.], shape=(3,), dtype=float32)
     
 
@@ -704,6 +784,8 @@ print(tf.strings.to_number(tf.strings.split(text, " ")))
 byte_ints = tf.io.decode_raw(tf.constant("Duck"), tf.uint8)
 print("Bytes:", byte_ints)
 ```
+
+__output__
 
     Bytes: tf.Tensor([ 68 117  99 107], shape=(4,), dtype=uint8)
     
@@ -719,12 +801,14 @@ print("Unicode bytes:", unicode_bytes)
 print("\nUnicode values:", unicode_values)
 ```
 
+__output__
+
     Unicode bytes: tf.Tensor(b'\xea\xb0\x80\xeb\x82\x98\xeb\x8b\xa4', shape=(), dtype=string)
     
     Unicode values: tf.Tensor([44032 45208 45796], shape=(3,), dtype=int32)
     
 
-###희소 텐서
+### 희소 텐서
 
 텐서에 값이 모든 위치에 있는 것이 아니라 드문드문 있는 경우 사용할 수 있는 방식이다.
 
@@ -738,6 +822,8 @@ sparse_tensor = tf.sparse.SparseTensor(indices=[[0, 0], [1, 2]],  #값이 존재
 
 print(tf.sparse.to_dense(sparse_tensor))
 ```
+
+__output__
 
     tf.Tensor(
     [[1 0 0 0]
