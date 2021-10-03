@@ -19,8 +19,8 @@ import numpy as np
 
 새로운 텐서를 만들 수만 있고 내용을 업데이트 할 수는 없다.
 
-</br>
-</br>
+<br/>
+<br/>
 
 ## 기본 텐서 조작
 
@@ -38,7 +38,7 @@ __output__
 
     tf.Tensor(4, shape=(), dtype=int32)
     
-</br>
+<br/>
 
 ### 벡터(1차원)
 
@@ -54,7 +54,7 @@ __output__
 
     tf.Tensor([2. 3. 4.], shape=(3,), dtype=float32)
     
-</br>
+<br/>
 
 ```python
 rank_1_tensor = tf.constant([2, 3, 4])
@@ -65,7 +65,7 @@ __output__
 
     tf.Tensor([2 3 4], shape=(3,), dtype=int32)
 
-</br>
+<br/>
 
 ### 행렬(2차원)
 
@@ -86,7 +86,7 @@ __output__
      [3. 4.]
      [5. 6.]], shape=(3, 2), dtype=float16)
     
-</br>
+<br/>
 
 ### 3차원
 
@@ -116,7 +116,7 @@ __output__
      [[20 21 22 23 24]
       [25 26 27 28 29]]], shape=(3, 2, 5), dtype=int32)
 
-</br>
+<br/>
 
 ### NumPy 배열로 변환
 
@@ -134,7 +134,7 @@ __output__
            [3., 4.],
            [5., 6.]], dtype=float16)
 
-</br>
+<br/>
 
 
 ```python
@@ -148,7 +148,7 @@ __output__
            [3., 4.],
            [5., 6.]], dtype=float16)
 
-</br>
+<br/>
 
 ### 산술 연산
 
@@ -189,7 +189,7 @@ __output__
     [[1. 2.]
      [3. 4.]], shape=(2, 2), dtype=float64)
     
-</br>
+<br/>
 
 메소드 사용 없이 직접 연산도 가능하다.
 
@@ -214,7 +214,7 @@ __output__
     [[3 3]
      [7 7]], shape=(2, 2), dtype=int32)
 
-</br>
+<br/>
 
 모든 종류의 연산에도 사용가능하다.
 
@@ -235,8 +235,8 @@ __output__
     [[2.6894143e-01 7.3105854e-01]
      [9.9987662e-01 1.2339458e-04]], shape=(2, 2), dtype=float32)
 
-</br>
-</br>
+<br/>
+<br/>
 
 ## Shape
 
@@ -268,7 +268,7 @@ __output__
     텐서의 마지막 축 요소 수 : 5
     모든 요소의 수(3*2*4*5) : 120
 
-</br>
+<br/>
 
 ### Shape 조작하기
 
@@ -284,7 +284,7 @@ __output__
 
     (3, 1)
     
-</br>
+<br/>
 
 해당 객체를 파이썬의 리스트로 변환할 수 있다.
 
@@ -299,7 +299,7 @@ __output__
     [3, 1]
     3
     
-</br>    
+<br/>    
 
 텐서를 새로운 shape으로 바꿀 수 있다. 주의해야 할 점은 기존 텐서와 새로운 shape의 텐서의 요소 수가 같아야 한다.
 
@@ -323,7 +323,7 @@ __output__
     [[1 2 3]]
     (1, 3)
     
-</br>
+<br/>
 
 데이터는 메모리안에서 레이아웃을 유지하고 있다가 새로운 shape의 요청이 들어오면 같은 데이터를 가르키는 새로운 텐서가 생성된다.
 
@@ -349,7 +349,7 @@ __output__
     [ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
      24 25 26 27 28 29]
     
-</br>
+<br/>
 
 일반적인 `tf.reshape`의 용도는 인접한 축을 결합하거나 분할하는 것이다.
 
@@ -376,7 +376,7 @@ __output__
      [10 11 12 13 14 15 16 17 18 19]
      [20 21 22 23 24 25 26 27 28 29]], shape=(3, 10), dtype=int32)
     
-</br>
+<br/>
 
 요소 수가 같으면 `rf.reshape`이 작동하지만, 축의 순서를 고려하지 않으면 별로 쓸모가 없다.
 
@@ -404,8 +404,8 @@ __output__
      [18 19 20 21 22 23]
      [24 25 26 27 28 29]], shape=(5, 6), dtype=int32)
      
-</br>
-</br>
+<br/>
+<br/>
 
 ## 인덱싱
 
@@ -424,7 +424,7 @@ __output__
 
     [ 0  1  1  2  3  5  8 13 21 34]
     
-</br>
+<br/>
 
 스칼라를 사용하여 인덱싱하면 축이 제거된다.(차원이 낮아진다)
 
@@ -441,7 +441,7 @@ __output__
     두번째 : 1
     마지막 : 34
     
-</br>
+<br/>
 
 `:`슬라이스를 사용하여 인덱싱하면 축이 유지된다.
 
@@ -464,7 +464,7 @@ __output__
     2개씩 건너뛰어서 인덱싱 : [ 0  1  3  8 21]
     거꾸로 : [34 21 13  8  5  3  2  1  1  0]
     
-</br>
+<br/>
 
 더 높은 차원의 텐서는 여러 인덱스를 전달하여 인덱싱된다.
 
@@ -481,7 +481,7 @@ __output__
      [3. 4.]
      [5. 6.]]
     
-</br>
+<br/>
 
 각 인덱스에 정수를 전달하면 스칼라가 결과로 나온다.
 
@@ -494,7 +494,7 @@ __output__
 
     4.0
     
-</br>
+<br/>
 
 정수와 슬라이스를 조합하여 인덱싱 할 수 있다.
 
@@ -516,7 +516,7 @@ __output__
     [[3. 4.]
      [5. 6.]]
     
-</br>
+<br/>
 
 3차원 텐서의 예시이다.
 
@@ -536,7 +536,7 @@ __output__
      [[20 21 22 23 24]
       [25 26 27 28 29]]]
     
-</br>
+<br/>
 
 ```python
 print(rank_3_tensor[:, :, 4])
@@ -549,8 +549,8 @@ __output__
      [14 19]
      [24 29]], shape=(3, 2), dtype=int32)
         
-</br>
-</br>
+<br/>
+<br/>
 
 ## DTypes
 
@@ -577,8 +577,8 @@ __output__
     
     tf.Tensor([2 3 4], shape=(3,), dtype=uint8)
     
-</br>
-</br>
+<br/>
+<br/>
 
 ## 브로드캐스팅
 
@@ -603,7 +603,7 @@ __output__
     tf.Tensor([2 4 6], shape=(3,), dtype=int32)
     tf.Tensor([2 4 6], shape=(3,), dtype=int32)
     
-</br>
+<br/>
 
 축의 크기가 1인 인수는 다른 인수와 일치하도록 확장할 수 있다.
 
@@ -633,7 +633,7 @@ __output__
      [ 2  4  6  8]
      [ 3  6  9 12]], shape=(3, 4), dtype=int32)
  
-</br> 
+<br/> 
 
 만약 브로드캐스팅 없이 같은 연산을 하려면 다음과 같이 실행해야 한다.
 
@@ -657,7 +657,7 @@ __output__
      [ 2  4  6  8]
      [ 3  6  9 12]], shape=(3, 4), dtype=int32)
     
-</br>
+<br/>
 
 브로드캐스팅은 메모리에서 브로드캐스트 연산으로 확장된 텐서를 구체화하지 않기 때문에 시간과 공간적으로 효율적이다.
 
@@ -675,8 +675,8 @@ __output__
      [1 2 3]
      [1 2 3]], shape=(3, 3), dtype=int32)
     
-</br>
-</br>
+<br/>
+<br/>
 
 ## tf.convert_to_tensor
 
@@ -686,8 +686,8 @@ __output__
 
 변환 레지스트리가 있어서 NumPy의 `ndarray`, `TensorShape`, Python의 list, `tf.Variable`과 같은 대부분의 객체 클래스는 자동으로 변환된다.
 
-</br>
-</br>
+<br/>
+<br/>
 
 ## 비정형 텐서
 
@@ -712,7 +712,7 @@ __output__
 
     ValueError: Can't convert non-rectangular Python sequence to Tensor.
     
-</br>
+<br/>
 
 ```python
 ragged_tensor = tf.ragged.constant(ragged_list)
@@ -723,7 +723,7 @@ __output__
 
     <tf.RaggedTensor [[0, 1, 2, 3], [4, 5], [6, 7, 8], [9]]>
     
-</br>
+<br/>
 
 그리고 `tf.RaggedTensor`의 shape에는 축마다 요소의 수가 다르기 때문에 길이를 알 수 없는 축이 포함되어 있다.
 
@@ -736,8 +736,8 @@ __output__
 
     (4, None)
     
-</br>
-</br>
+<br/>
+<br/>
 
 ## 문자열 텐서
 
@@ -757,7 +757,7 @@ __output__
 
     tf.Tensor(b'Gray wolf', shape=(), dtype=string)
     
-</br>
+<br/>
 
 ```python
 tensor_of_strings = tf.constant(["Gray wolf",
@@ -771,7 +771,7 @@ __output__
 
     tf.Tensor([b'Gray wolf' b'Quick brown fox' b'Lazy dog'], shape=(3,), dtype=string)
 
-</br>
+<br/>
 
 출력에서 b 접두사는 `tf.string` dtype이 유니코드 문자열이 아니라 바이트 문자열임을 나타내는 것이다.
 
@@ -787,7 +787,7 @@ __output__
 
     <tf.Tensor: shape=(), dtype=string, numpy=b'\xf0\x9f\xa5\xb3\xf0\x9f\x91\x8d'>
 
-</br>
+<br/>
 
 `tf.strings.split`을 포함한 문자열의 기본 함수는 `tf.strings`에서 찾을 수 있다.
 
@@ -806,7 +806,7 @@ __output__
     tf.Tensor([b'Gray' b'wolf'], shape=(2,), dtype=string)
     <tf.RaggedTensor [[b'Gray', b'wolf'], [b'Quick', b'brown', b'fox'], [b'Lazy', b'dog']]>
 
-</br>
+<br/>
 
 `tf.string.to_number` 메소드를 이용하면 숫자로 이루어진 문자열 텐서를 숫자로 변환할 수 있다.
 
@@ -820,7 +820,7 @@ __output__
 
     tf.Tensor([  1.  10. 100.], shape=(3,), dtype=float32)
     
-</br>
+<br/>
 
 문자열을 숫자로 변환할 수는 없지만 바이트로 변환 후 아스키 코드 값으로 변환할 수는 있다.
 
@@ -834,7 +834,7 @@ __output__
 
     Bytes: tf.Tensor([ 68 117  99 107], shape=(4,), dtype=uint8)
     
-</br>
+<br/>
 
 유니코드 문자인 경우는 `tf.strings.unicode_decode`를 사용하면 변환 가능하다.
 
@@ -853,8 +853,8 @@ __output__
     
     Unicode values: tf.Tensor([44032 45208 45796], shape=(3,), dtype=int32)
     
-</br>
-</br>
+<br/>
+<br/>
 
 ## 희소 텐서
 
