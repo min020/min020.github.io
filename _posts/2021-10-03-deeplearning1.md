@@ -259,8 +259,6 @@ print("텐서의 마지막 축 요소 수 :", rank_4_tensor.shape[-1])
 print("모든 요소의 수(3*2*4*5) :", tf.size(rank_4_tensor).numpy())
 ```
 
-![png](https://raw.githubusercontent.com/min020/deep_learning/main/picture/4-axis_block.png)
-
 __output__
 
     모든 요소의 타입 : <dtype: 'float32'>
@@ -269,6 +267,8 @@ __output__
     텐서의 첫번째 축 요소 수 : 3
     텐서의 마지막 축 요소 수 : 5
     모든 요소의 수(3*2*4*5) : 120
+
+![png](https://raw.githubusercontent.com/min020/deep_learning/main/picture/4-axis_block.png)
 
 <br/>
 
